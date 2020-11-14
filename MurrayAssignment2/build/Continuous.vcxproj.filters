@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="16.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\murra\Documents\ECSE541\Assignment2\build\CMakeFiles\b85488d436161f70185d0a68113f8365\Continuous.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\murra\Documents\ECSE541\Assignment2\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\murra\Documents\ECSE541\Assignment2\build\CMakeFiles\Continuous" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{17C7FA12-E15B-349B-83E3-1430F7580BA4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
