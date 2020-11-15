@@ -148,22 +148,6 @@ class Bus : public sc_channel, public bus_master_if, public bus_minion_if{
 						temp2->next = temp; //insert temp at the end of the list
 					}
 				}while(!done_walking);
-				
-				if(current->mst_id != mst_id){
-					
-					
-					//since the current master is not the same as the requesting, put the requesting next in line
-					temp->next = current->next; //save the former next request
-					current->next = temp;
-				} else {
-					//here we have to check a few things.
-					if(current->next != NULL){
-						if(current->mst_id == mst_id && current->next->mst_id == mst_id){
-							//if there are two of the same master ids in a row, put the 
-						}
-					}
-				}
-				
 			}
 			temp = NULL;
 			
@@ -187,10 +171,9 @@ class Bus : public sc_channel, public bus_master_if, public bus_minion_if{
 				if(mutex_lock_ack_func.trylock() != -1) {
 					//check if the current execution context is the correct one
 					if(current->mst_id == mst_id){
-						wait(); //Ack takes one clock cycle (at least)
-						//cout << "ACK: " << mst_id << endl;
 						//if the current execution context is the correct thread, return true
 						//and allow the thread to master the bus.
+						wait(); //Ack takes one clock cycle (at least)
 					
 						event_req_mas.notify(); //notify the minions of a request. 
 						if(print_output)
@@ -227,45 +210,6 @@ class Bus : public sc_channel, public bus_master_if, public bus_minion_if{
 			}
 		}
 		
-		/* OLD WORKING CODE for WaitForAcknowledge()
-		============================
-		THIS IS ADDED JUST FOR REFERENCE, TO SAY THAT IT CAN BE DONE THIS WAY, BUT
-		YOU SHOULD PROBABLY JUST USE MUTEX INSTEAD.
-		============================
-		if(lock_m){
-			cout << "TIME " << sc_time_stamp() << "; LOCKED 1: " << mst_id << endl;
-			wait(event_unlock_mutex);
-		}else{
-			lock_m = true;
-			event_req_mas.notify(); //notify the minions of a request. 
-			cout << "TIME " << sc_time_stamp() << "; MASTER: " << current->mst_id << " waiting on ack\n";
-			//wait for the acknowledge to occur
-			wait(event_ack_min_mas);
-			cout << "TIME " << sc_time_stamp() << "; MASTER: " << current->mst_id << " done wait on ack\n";
-			//check if the current execution context is the correct one
-			if(current->mst_id == mst_id){
-				//cout << "ACK: " << mst_id << endl;
-				//if the current execution context is the correct thread, return true
-				//and allow the thread to master the bus.
-				if(current->len == 0){
-					//this is just a notification not a memory access.
-					cout << "MASTER: " << current->mst_id << " has finished 0 length operation\n";
-					temp = current;
-					current = current->next;
-					delete temp;
-					temp = NULL;
-					event_unlock_mutex.notify();
-					lock_m = false;
-				}else{
-					current->acknowledged = true;
-					lock_m = true;
-				}
-				return true;
-			}else{
-				wait(event_unlock_mutex);
-				cout << "TIME " << sc_time_stamp() << "; LOCKED 2: " << mst_id << endl;
-			}
-		}*/
 		
 		/* Implements the ReadData functionality, namely, it facilitates the reading of 
 		the minions by the master device. It should be noted that while the master has
