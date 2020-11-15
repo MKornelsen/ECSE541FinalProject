@@ -1,7 +1,13 @@
 #include "systemc.h"
-#include "a2_include.h"
+#include "project_include.h"
 #include <stdio.h>
 #include <stdlib.h> 
+
+/**
+===========================================================================================
+TODO:Change all comments and file names to match project
+===========================================================================================
+**/
 
 /*good output should be
 [[  0,   0,   0,   0,   0,   0],

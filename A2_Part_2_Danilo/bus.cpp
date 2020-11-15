@@ -1,11 +1,17 @@
 #include "systemc.h"
-#include "a2_include.h"
+#include "project_include.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 
 /**
-This is the arbitrated bus component for assignment 2 of ECSE 541.
+===========================================================================================
+TODO:Change all comments and file names to match project
+===========================================================================================
+**/
+
+/**
+This is the arbitrated bus component for the project of ECSE 541.
 
 The arbitrated bus implements sc_module, bus_master_if, and bus_minion_if.
 These interfaces are specifically used since the component must be a SystemC
