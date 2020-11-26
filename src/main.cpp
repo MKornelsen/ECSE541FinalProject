@@ -7,8 +7,7 @@
 #include "memory.cpp"
 #include "DRAM.cpp"
 #include "eie_accelerator.h"
-#include <stdio.h>
-#include <stdlib.h> 
+#include "eie_sw_module.h"
 
 #define help_usage 1
 #define help_file 2
@@ -42,6 +41,8 @@ class project_top : public sc_module {
 		Memory    * my_mem;
 		Cross_Bus * cross_bus;
 		DRAM      * dram;
+		EIE_central_control * eie_cc;
+		EIE_accelerator * eie_accels[NUM_ACCELERATORS];
 		
 		SC_HAS_PROCESS(project_top);
 		
@@ -77,6 +78,22 @@ class project_top : public sc_module {
 			cross_bus -> dram_if(*dram);
 			cross_bus -> internal_clk(int_clk);
 			cross_bus -> external_clk(ext_clk);
+
+			eie_cc = new EIE_central_control("EIE_CENTRAL_CONTROL");
+			eie_cc -> bus_master(*my_bus);
+			eie_cc -> bus_minion(*my_bus);
+
+			for (int i = 0; i < NUM_ACCELERATORS; i++) {
+				std::string name("EIE_ACCELERATOR_" + std::to_string(i));
+				
+				eie_accels[i] = new EIE_accelerator(name.c_str());
+				eie_accels[i] -> clk(int_clk);
+
+				eie_cc -> accelerators[i](*eie_accels[i]);
+			}
+
+			
+
 			
 			//Define the testbench thread
 			SC_THREAD(testbench);

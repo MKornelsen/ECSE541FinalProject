@@ -5,7 +5,7 @@
 #include "eie_if.h"
 #include "eie_central_control.h"
 
-class eie_accelerator : public sc_module {
+class EIE_accelerator : public sc_module, public EIE_accel_if {
 private:
     std::vector<std::vector<std::vector<double>>> weightSRAM;
     std::vector<double> input;
@@ -16,9 +16,9 @@ private:
 public:
     sc_in_clk clk;
 
-    SC_HAS_PROCESS(eie_accelerator);
+    SC_HAS_PROCESS(EIE_accelerator);
 
-    eie_accelerator(sc_module_name name) : sc_module(name) {
+    EIE_accelerator(sc_module_name name) : sc_module(name) {
         input_ready = false;
         output_ready = false;
 
@@ -47,7 +47,7 @@ public:
                             // skip zeros
                         }
                     }
-                    output.push_back(matVecProd);
+                    output.push_back(std::max(0.0, matVecProd));
                 }
                 output_ready = true;
             }
