@@ -11,13 +11,15 @@ private:
     std::vector<double> input;
     std::vector<double> output;
 
-    bool output_ready;
+    bool input_ready, output_ready;
+    unsigned int current_layer;
 public:
     sc_in_clk clk;
 
     SC_HAS_PROCESS(eie_accelerator);
 
     eie_accelerator(sc_module_name name) : sc_module(name) {
+        input_ready = false;
         output_ready = false;
 
         SC_THREAD(eie_accelerator_proc);
@@ -27,6 +29,29 @@ public:
         while (true) {
             wait(clk.posedge_event());
 
+            if (input_ready) {
+                input_ready = false;
+                std::vector<std::vector<double>> &layerWeights = weightSRAM.at(current_layer);
+                if (layerWeights.at(0).size() != input.size()) {
+                    continue;
+                }
+                output.clear();
+                for (int i = 0; i < layerWeights.size(); i++) {
+                    double matVecProd = 0.0;
+                    for (int j = 0; j < layerWeights.at(i).size(); j++) {
+                        double mtmp = layerWeights.at(i).at(j);
+                        double vtmp = input.at(j);
+                        if (mtmp != 0 && vtmp != 0) {
+                            matVecProd += layerWeights.at(i).at(j) * input.at(j);
+                        } else {
+                            // skip zeros
+                        }
+                    }
+                    output.push_back(matVecProd);
+                }
+                output_ready = true;
+            }
+            
         }
     }
 
@@ -35,17 +60,23 @@ public:
         weightSRAM.at(layer).push_back(weightCopy);
     }
 
-    bool PushInputs(std::vector<double> inputs) {
+    bool PushInputs(std::vector<double> inputs, unsigned int layer) {
         input.clear();
         for (int i = 0; i < inputs.size(); i++) {
             input.push_back(inputs.at(i));
         }
+        current_layer = layer;
+        output_ready = false;
+        input_ready = true;
         return true;
     }
 
-    bool ComputeResult(unsigned int layer, std::vector<double> &result) {
+    bool FetchResult(std::vector<double> &result) {
         result.clear();
-        std::vector<std::vector<double>> &layerWeights = weightSRAM.at(layer);
+        
+        while (!output_ready) {
+            wait(clk.posedge_event());
+        }
         
         for (int i = 0; i < output.size(); i++) {
             result.push_back(output.at(i));
