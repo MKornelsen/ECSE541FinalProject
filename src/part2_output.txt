@@ -1,0 +1,57 @@
+---------------------------------------
+
+Starting Assignment 2 Part 2 Simulation
+
+---------------------------------------
+BUS has been instantiated with name *MY_BUS*
+SW MOD has been instantiated with name *MY_SW*
+HW MOD has been instantiated with name *MY_HW*
+MEMORY has been instantiated with name *MY_MEM
+TIME 2139786 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2159784 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2179782 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2199780 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2219778 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2239776 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2259774 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2279772 ps, SW_MOD read output matrix value: 162 from bus
+TIME 2299770 ps, SW_MOD read output matrix value: 222 from bus
+TIME 2319768 ps, SW_MOD read output matrix value: 219 from bus
+TIME 2339766 ps, SW_MOD read output matrix value: 207 from bus
+TIME 2359764 ps, SW_MOD read output matrix value: 218 from bus
+TIME 2379762 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2399760 ps, SW_MOD read output matrix value: 284 from bus
+TIME 2419758 ps, SW_MOD read output matrix value: 474 from bus
+TIME 2439756 ps, SW_MOD read output matrix value: 416 from bus
+TIME 2459754 ps, SW_MOD read output matrix value: 443 from bus
+TIME 2479752 ps, SW_MOD read output matrix value: 483 from bus
+TIME 2499750 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2519748 ps, SW_MOD read output matrix value: 76 from bus
+TIME 2539746 ps, SW_MOD read output matrix value: 129 from bus
+TIME 2559744 ps, SW_MOD read output matrix value: 115 from bus
+TIME 2579742 ps, SW_MOD read output matrix value: 111 from bus
+TIME 2599740 ps, SW_MOD read output matrix value: 139 from bus
+TIME 2619738 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2639736 ps, SW_MOD read output matrix value: 48 from bus
+TIME 2659734 ps, SW_MOD read output matrix value: 101 from bus
+TIME 2679732 ps, SW_MOD read output matrix value: 83 from bus
+TIME 2699730 ps, SW_MOD read output matrix value: 95 from bus
+TIME 2719728 ps, SW_MOD read output matrix value: 101 from bus
+TIME 2739726 ps, SW_MOD read output matrix value: 0 from bus
+TIME 2759724 ps, SW_MOD read output matrix value: 130 from bus
+TIME 2779722 ps, SW_MOD read output matrix value: 209 from bus
+TIME 2799720 ps, SW_MOD read output matrix value: 199 from bus
+TIME 2819718 ps, SW_MOD read output matrix value: 196 from bus
+TIME 2839716 ps, SW_MOD read output matrix value: 220 from bus
+
+----------------------------------
+
+DONE Assignment 2 Part 2 Simulation
+
+AT TIME: 2846388666 ps
+
+SOFTWARE MODULE USED: 137000 cycles
+
+HARDWARE MODULE USED: 189000 cycles
+
+----------------------------------

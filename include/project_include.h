@@ -39,7 +39,7 @@ Include file for Assignment 1
 #define DRAM_SIZE 1024
 #define DRAM_START_ADDR 1024
 
-
+#define NUM_ACCELERATORS 4
 
 
 /** </EXTERNAL DEFINES> **/
