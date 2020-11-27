@@ -123,7 +123,7 @@ public:
             wait(clk.posedge_event());
         }
 
-        if (dbg) cout <<"WriteData - " << sc_time_stamp() << endl;
+        if (dbg) cout << "WriteData - " << sc_time_stamp() << endl;
         bus_data = data;
         data_ready = true;
         bus_ready = false;
