@@ -1,4 +1,4 @@
-C_FILES = main.cpp 
+C_FILES = eie_main.cpp 
 INCLUDE_PATHS = -I. -I../include -I$(SYSTEMC_HOME)/include
 LINKER_PATHS = -L. -L$(SYSTEMC_HOME)/lib-linux64
 LINKER_ARGUMENTS = -lsystemc -lm
