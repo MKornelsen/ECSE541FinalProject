@@ -37,7 +37,7 @@ class DRAM : public sc_module, public simple_mem_if {
 			unsigned int base_addr = 0;
 
 			for (int i = 0; i < NUM_LAYERS; i++) {
-				std::string path("C:/Users/murra/Documents/ECSE541/ECSE541FinalProject/Weights/");
+				std::string path("Weights/");
 				path += std::string("weight_l") + std::to_string(i) + std::string(".txt");
 				cout << path << endl;
 				
@@ -57,6 +57,7 @@ class DRAM : public sc_module, public simple_mem_if {
 				for (int j = 0; j < tmp.size(); j++) {
 					main_memory[base_addr + j] = tmp.at(j);
 				}
+				cout << *(float *) &main_memory[base_addr] << endl;
 				base_addr += (unsigned int) tmp.size();
 			}
 		}

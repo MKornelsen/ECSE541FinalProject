@@ -32,7 +32,7 @@ public:
             req_addr = EIE_CC_BASE_ADDR;
             req_len = 10;
             req_op = OP_WRITE;
-
+            
             ccstatus[EIE_CC_ADDR_OP] = EIE_CC_OP_WRITE_WEIGHT;
             ccstatus[EIE_CC_ADDR_DATA] = dram_addr;
             ccstatus[EIE_CC_ADDR_LAYER] = i;
