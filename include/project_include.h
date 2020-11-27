@@ -19,8 +19,8 @@ Include file for Assignment 1
 #define ADDR_HW_MINION 109
 
 //Defines for the bus block
-#define BUS_MST_SW 1
-#define BUS_MST_HW 2
+#define BUS_MST_SW 0
+#define BUS_MST_HW 1
 
 #define OP_READ 5
 #define OP_WRITE 6
@@ -100,7 +100,6 @@ class bus_minion_if : virtual public sc_interface
 };
 
 /** </Interface and Class definitions> **/
-
 
 
 

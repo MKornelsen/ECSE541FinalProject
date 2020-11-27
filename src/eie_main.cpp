@@ -1,6 +1,6 @@
 #include <systemc.h>
 #include <project_include.h>
-#include "bus.cpp"
+#include "bus.h"
 #include "cross_bus_module.cpp"
 #include "memory.cpp"
 #include "DRAM.cpp"
@@ -26,14 +26,14 @@ class project_top : public sc_module {
 		
 	public:
 		//Signals and ports
-		sc_in<bool> int_clk;
-		sc_in<bool> ext_clk;
-		sc_signal<bool> req_1;
-		sc_signal<bool> done, show_output;
-		sc_signal<int> sw_cycles, hw_cycles;
+		sc_in_clk int_clk;
+		sc_in_clk ext_clk;
+		// sc_signal<bool> req_1;
+		// sc_signal<bool> done, show_output;
+		// sc_signal<int> sw_cycles, hw_cycles;
 		
 		//Object references
-		Bus * my_bus;
+		bus_clocked * bus;
 		EIE_SW_module * eie_sw;
 		Cross_Bus * cross_bus;
 		DRAM      * dram;
@@ -47,23 +47,27 @@ class project_top : public sc_module {
 			init_print();
 			
 			//Instantiate the objects and link them to the various ports and signals
-			my_bus = new Bus("MY_BUS", verbose);
+			bus = new bus_clocked("MY_BUS");
+			bus->clk(int_clk);
+			unsigned int idtmp;
+			bus->attach_master(idtmp);
+			bus->attach_master(idtmp);
 
             eie_sw = new EIE_SW_module("EIE_SW");
-            eie_sw -> bus(*my_bus);
+            eie_sw -> bus(*bus);
 			
 			dram = new DRAM("MY_DRAM");
 			
 			cross_bus = new Cross_Bus("MY_INTERNAL_EXTERNAL_MOD");
-			cross_bus -> internal_bus(*my_bus);
+			cross_bus -> internal_bus(*bus);
 			cross_bus -> dram_if(*dram);
 			cross_bus -> internal_clk(int_clk);
 			cross_bus -> external_clk(ext_clk);
 
 			eie_cc = new EIE_central_control("EIE_CENTRAL_CONTROL");
             eie_cc -> clk(int_clk);
-			eie_cc -> bus_master(*my_bus);
-			eie_cc -> bus_minion(*my_bus);
+			eie_cc -> bus_master(*bus);
+			eie_cc -> bus_minion(*bus);
 
 			for (int i = 0; i < NUM_ACCELERATORS; i++) {
 				std::string name("EIE_ACCELERATOR_" + std::to_string(i));
@@ -75,39 +79,11 @@ class project_top : public sc_module {
 			}
 			
 			//Define the testbench thread
-			SC_THREAD(testbench);
-				dont_initialize();
-				sensitive << int_clk.pos();
+			// SC_THREAD(testbench);
+			// 	dont_initialize();
+			// 	sensitive << int_clk.pos();
 		}
 		
-		//This is just a simple testbench to run the system
-		void testbench(){
-			wait(100, SC_NS); //wait for testing to finish
-			req_1.write(false);
-			show_output.write(true);
-			wait(clock_period_int, SC_NS); //allow the signal to be registered
-			
-			for(int i = 0; i < 1000; i++){
-				req_1.write(true);
-				wait(clock_period_int, SC_NS);
-				req_1.write(false);
-				wait(clock_period_int, SC_NS);
-
-				while(done.read() != true){
-					wait(clock_period_int, SC_NS);
-				}
-				
-				wait(clock_period_int, SC_NS);
-				show_output.write(false);
-			}
-			
-			int sw_c = sw_cycles.read();
-			int hw_c = hw_cycles.read();
-			
-			final_print(sw_c, hw_c);
-			sc_stop();
-		}
-	
 		void init_print(){
 			cout << "\n---------------------------\n";
 			cout << "\nStarting Project Simulation\n";

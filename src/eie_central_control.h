@@ -52,11 +52,12 @@ public:
                     }
                 } else if (req_op == OP_WRITE) {
                     for (unsigned int i = 0; i < req_len; i++) {
-                        bus_minion->ReceiveWriteData(status[tmp_addr]);
+                        bus_minion->ReceiveWriteData(status[tmp_addr + i]);
                     }
-                    
+                    cout << "write " << req_addr << endl;
                     status[EIE_CC_ADDR_OP_COMPLETE] = 0;
                     if (tmp_addr == EIE_CC_ADDR_OP) {
+                        cout << "op_receive_event notify" << endl;
                         op_receive_event.notify();
                     }
                 }
@@ -69,11 +70,13 @@ public:
 
         while (true) {
             wait(op_receive_event);
-
+            
             unsigned int data_addr = status[EIE_CC_ADDR_DATA];
             unsigned int layer = status[EIE_CC_ADDR_LAYER];
             unsigned int rowlen = status[EIE_CC_ADDR_ROWLEN];
             unsigned int rows = status[EIE_CC_ADDR_ROWS];
+
+            cout << "op_receive_event caught" << endl;
 
             switch (status[EIE_CC_ADDR_OP]) {
             case EIE_CC_OP_WRITE_WEIGHT:
@@ -93,6 +96,7 @@ public:
                         double dval = (double) *(float *) &data;
                         tmpWeights.push_back(dval);
                     }
+                    // cout << "pushing row " << i << " layer " << layer << endl;
                     accelerators[i % NUM_ACCELERATORS]->PushWeights(tmpWeights, layer);
                 }
                 status[EIE_CC_ADDR_OP_COMPLETE] = 1;
