@@ -54,10 +54,10 @@ public:
                     for (unsigned int i = 0; i < req_len; i++) {
                         bus_minion->ReceiveWriteData(status[tmp_addr + i]);
                     }
-                    cout << "write " << req_addr << endl;
+                    // cout << "write " << req_addr << endl;
                     status[EIE_CC_ADDR_OP_COMPLETE] = 0;
                     if (tmp_addr == EIE_CC_ADDR_OP) {
-                        cout << "op_receive_event notify" << endl;
+                        // cout << "op_receive_event notify" << endl;
                         op_receive_event.notify();
                     }
                 }
@@ -76,7 +76,7 @@ public:
             unsigned int rowlen = status[EIE_CC_ADDR_ROWLEN];
             unsigned int rows = status[EIE_CC_ADDR_ROWS];
 
-            cout << "op_receive_event caught" << endl;
+            // cout << "op_receive_event caught" << endl;
 
             switch (status[EIE_CC_ADDR_OP]) {
             case EIE_CC_OP_WRITE_WEIGHT:
@@ -85,6 +85,7 @@ public:
                     numLayers = layer + 1;
                 }
                 req_addr = data_addr + DRAM_BASE_ADDR;
+                cout << "req_addr = " << req_addr << endl;
                 req_len = rows * rowlen;
                 req_op = OP_READ;
                 bus_master->Request(BUS_MST_HW, req_addr, req_op, req_len);
@@ -101,9 +102,9 @@ public:
                 }
                 status[EIE_CC_ADDR_OP_COMPLETE] = 1;
                 
-                for (int i = 0; i < NUM_ACCELERATORS; i++) {
-                    accelerators[i]->PrintAcceleratorInfo(i);
-                }
+                // for (int i = 0; i < NUM_ACCELERATORS; i++) {
+                //     accelerators[i]->PrintAcceleratorInfo(i);
+                // }
                 break;
             case EIE_CC_OP_READ_OUTPUT:
                 req_addr = data_addr + DRAM_BASE_ADDR;
@@ -118,17 +119,21 @@ public:
                 }
                 break;
             case EIE_CC_OP_WRITE_INPUT:
+                // cout << "EIE_CC_OP_WRITE_INPUT" << endl;
+                // for (int i = 0; i < NUM_ACCELERATORS; i++) {
+                //     accelerators[i]->PrintAcceleratorInfo(i);
+                // }
                 status[EIE_CC_ADDR_OUTREADY] = 0;
                 req_addr = data_addr + DRAM_BASE_ADDR;
                 req_len = rowlen;
                 req_op = OP_READ;
                 bus_master->Request(BUS_MST_HW, req_addr, req_op, req_len);
                 bus_master->WaitForAcknowledge(BUS_MST_HW);
-                std::vector<double> tmpInput;
+                inputBuffer.clear();
                 for (unsigned int i = 0; i < req_len; i++) {
                     bus_master->ReadData(data);
                     double dval = (double) *(float *) &data;
-                    tmpInput.push_back(dval);
+                    inputBuffer.push_back(dval);
                 }
                 network_execute_event.notify();
                 break;
@@ -139,6 +144,13 @@ public:
     void network_execute() {
         while (true) {
             wait(network_execute_event);
+            // cout << "network_execute_event received" << endl;
+            // cout << "inputBuffer size = " << inputBuffer.size() << endl;
+            // cout << "INPUT:" << endl;
+            // for (unsigned int i = 0; i < inputBuffer.size(); i++) {
+            //     cout << inputBuffer.at(i) << " ";
+            // }
+            // cout << endl;
             for (unsigned int i = 0; i < numLayers; i++) {
                 for (int j = 0; j < NUM_ACCELERATORS; j++) {
                     accelerators[j]->PushInputs(inputBuffer, i);
@@ -157,9 +169,20 @@ public:
                 }
             }
             outputBuffer.clear();
+            // cout << "OUTPUT:" << endl;
             for (unsigned int i = 0; i < inputBuffer.size(); i++) {
                 outputBuffer.push_back(inputBuffer.at(i));
+                // cout << outputBuffer.at(i) << " ";
             }
+            // cout << endl;
+            
+            unsigned int maxidx = 0;
+            for (unsigned int i = 1; i < outputBuffer.size(); i++) {
+                if (outputBuffer[i] > outputBuffer[maxidx]) {
+                    maxidx = i;
+                }
+            }
+            status[EIE_CC_ADDR_PREDICTED_LABEL] = maxidx;
             status[EIE_CC_ADDR_OUTREADY] = 1;
         }
     }

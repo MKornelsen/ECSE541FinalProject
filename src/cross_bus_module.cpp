@@ -33,6 +33,8 @@ class Cross_Bus : public sc_module {
 		unsigned int req_len;
 		unsigned int rdata;
 		unsigned int wdata;
+
+		unsigned int dram_req_addr;
 		
 	public:
 		//This is a bus minion, must connect to the minion port. 
@@ -72,6 +74,7 @@ class Cross_Bus : public sc_module {
 					internal_bus->Acknowledge(); //ack the request, then fulfil the operation
 					
 					for(unsigned int i = 0; i < req_len; i++){
+						dram_req_addr = req_addr + i;
 						if(req_op == OP_READ){
 							//read operation
 							wait(); //wait for the positive clock edge so that we follow bus protocols
@@ -106,10 +109,10 @@ class Cross_Bus : public sc_module {
 				//cout << "TIME " << sc_time_stamp() << ", ACCESSING DRAM!\n";
 				if(req_op == OP_READ){
 					//read
-					dram_if->Read(req_addr, rdata);
+					dram_if->Read(dram_req_addr, rdata);
 				} else{
 					//write
-					dram_if->Write(req_addr, wdata);
+					dram_if->Write(dram_req_addr, wdata);
 				}
 				dram_done_event.notify();
 			}

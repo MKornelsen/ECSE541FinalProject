@@ -97,6 +97,7 @@ public:
         for (int i = 0; i < weightSRAM.size(); i++) {
             cout << "Layer " << i << " - " << weightSRAM.at(i).size() << " rows, ";
             cout << weightSRAM.at(i).at(0).size() << " columns" << endl;
+            cout << "First few weights: " << weightSRAM[i][0][0] << " " << weightSRAM[i][0][1] << " " << weightSRAM[i][0][2] << endl;
         }
         cout << endl;
     }

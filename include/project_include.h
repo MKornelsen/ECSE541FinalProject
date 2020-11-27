@@ -33,7 +33,7 @@ Include file for Assignment 1
 
 
 /** </INTERNAL DEFINES> **/
-
+#define TEST_IMAGES 1000
 
 /** <EXTERNAL DEFINES> **/
 #define DRAM_BASE_ADDR 1024
@@ -55,6 +55,7 @@ Include file for Assignment 1
 #define EIE_CC_ADDR_LAYER 5
 #define EIE_CC_ADDR_OUTREADY 6
 #define EIE_CC_ADDR_OP_COMPLETE 7
+#define EIE_CC_ADDR_PREDICTED_LABEL 8
 
 #define EIE_CC_OP_WRITE_WEIGHT 1
 #define EIE_CC_OP_WRITE_INPUT 2
