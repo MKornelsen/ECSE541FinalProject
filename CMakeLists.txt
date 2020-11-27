@@ -4,7 +4,7 @@ project(541FinalProject VERSION 0.1.0)
 include(CTest)
 enable_testing()
 
-include_directories(include SystemC/include)
+include_directories(${CMAKE_SOURCE_DIR}/include ${CMAKE_SOURCE_DIR}/SystemC/include)
 add_compile_options("/vmg" "/GR")
 
 add_library(sysc STATIC IMPORTED)

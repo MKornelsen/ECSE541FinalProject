@@ -57,6 +57,9 @@ public:
             }
         }
 
+        // Start pushing the MNIST inputs
+        // set cc status to EIE_CC_OP_WRITE_INPUT
+
         sc_stop();
     }
 };
