@@ -1,4 +1,3 @@
 .vscode
 build
-CMakeLists.txt
-SystemC
+Weights

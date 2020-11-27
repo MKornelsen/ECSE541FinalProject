@@ -55,21 +55,18 @@ class SW_module : public sc_module{
 			
 			/*<TEST DRAM AND INTERNAL-EXTERNAL BUS FUNCTIONALITY>*/
 			wait();
-			bus->Request(BUS_MST_SW, DRAM_START_ADDR, OP_WRITE, 1);
+			bus->Request(BUS_MST_SW, DRAM_BASE_ADDR, OP_WRITE, 1);
 			bus->WaitForAcknowledge(BUS_MST_SW); //wait for bus response
 			cout << "TIME " << sc_time_stamp() << ", SW_MOD trying to write to DRAM!\n";
 			bus->WriteData(1234567);
 			cout << "TIME " << sc_time_stamp() << ", SW_MOD finished write to DRAM!\n";
-			bus->Request(BUS_MST_SW, DRAM_START_ADDR, OP_READ, 1);
+			bus->Request(BUS_MST_SW, DRAM_BASE_ADDR, OP_READ, 1);
 			bus->WaitForAcknowledge(BUS_MST_SW); //wait for bus response
 			cout << "TIME " << sc_time_stamp() << ", SW_MOD trying to read from DRAM!\n";
 			bus->ReadData(rdata);
 			cout << "TIME " << sc_time_stamp() << ", DATA READ BACK FROM DRAM: " << rdata << endl;
 			cout << "TIME " << sc_time_stamp() << output.read() << endl;
 			/*</TEST DRAM AND INTERNAL-EXTERNAL BUS FUNCTIONALITY>*/
-			
-			
-			
 			
 			//for tracking the performance
 			int num_reads = 0;

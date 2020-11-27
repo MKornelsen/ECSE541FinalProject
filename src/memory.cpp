@@ -51,7 +51,7 @@ class Memory : public sc_module {
 				bus->Listen(req_addr, req_op, req_len);
 				
 				//This request is for the memory, check the operation and size:
-				if(req_addr >= ADDR_A && req_addr < MEM_SIZE){
+				if(req_addr >= DRAM_BASE_ADDR && req_addr < MEM_SIZE){
 					bus->Acknowledge(); //ack the request, then fulfil the operation
 					
 					for(unsigned int i = 0; i < req_len; i++){

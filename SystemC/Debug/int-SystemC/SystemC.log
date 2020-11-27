@@ -1,0 +1,5 @@
+﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  sc_main_main.cpp
+  sc_main.cpp
+  Generating Code...
+  SystemC.vcxproj -> C:\Users\murra\Documents\SystemC\systemc-2.3.3\msvc10\SystemC\x64\Debug\SystemC.lib

@@ -36,11 +36,29 @@ Include file for Assignment 1
 
 
 /** <EXTERNAL DEFINES> **/
-#define DRAM_SIZE 1024
-#define DRAM_START_ADDR 1024
+#define DRAM_BASE_ADDR 1024
+#define DRAM_SIZE 0x08000000
+
+#define NUM_LAYERS 6
+
+#define LAYER_SIZES {784, 2500, 2000, 1500, 1000, 500, 10};
 
 #define NUM_ACCELERATORS 4
 
+#define EIE_CC_BASE_ADDR 0
+#define EIE_CC_ADDR_SIZE 0x100
+#define EIE_CC_ADDR_OP 0
+#define EIE_CC_ADDR_DATA 1
+#define EIE_CC_ADDR_LEN 2
+#define EIE_CC_ADDR_ROWS 3
+#define EIE_CC_ADDR_ROWLEN 4
+#define EIE_CC_ADDR_LAYER 5
+#define EIE_CC_ADDR_OUTREADY 6
+#define EIE_CC_ADDR_OP_COMPLETE 7
+
+#define EIE_CC_OP_WRITE_WEIGHT 1
+#define EIE_CC_OP_WRITE_INPUT 2
+#define EIE_CC_OP_READ_OUTPUT 3
 
 /** </EXTERNAL DEFINES> **/
 

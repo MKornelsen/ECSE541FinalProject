@@ -1,0 +1,2 @@
+C:\Users\murra\Documents\SystemC\systemc-2.3.3\msvc10\SystemC\x64\Debug\int-SystemC\SystemC.pdb
+C:\Users\murra\Documents\SystemC\systemc-2.3.3\msvc10\SystemC\x64\Debug\SystemC.pdb

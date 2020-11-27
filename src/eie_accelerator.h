@@ -55,18 +55,25 @@ public:
         }
     }
 
-    bool PushWeights(std::vector<double> weights, unsigned int layer) {
+    bool PushWeights(std::vector<double> &weights, unsigned int layer) {
         std::vector<double> weightCopy(weights);
+        while (weightSRAM.size() < layer + 1) {
+            weightSRAM.push_back(std::vector<std::vector<double>>());
+        }
         weightSRAM.at(layer).push_back(weightCopy);
+
+        return true;
     }
 
-    bool PushInputs(std::vector<double> inputs, unsigned int layer) {
+    bool PushInputs(std::vector<double> &inputs, unsigned int layer) {
+        output_ready = false;
+        
         input.clear();
         for (int i = 0; i < inputs.size(); i++) {
             input.push_back(inputs.at(i));
         }
         current_layer = layer;
-        output_ready = false;
+        
         input_ready = true;
         return true;
     }
@@ -84,4 +91,13 @@ public:
         return true;
     }
 
+    void PrintAcceleratorInfo(int accelerator_id) {
+        cout << "Accelerator " << accelerator_id << endl;
+        cout << weightSRAM.size() << " Layers:" << endl;
+        for (int i = 0; i < weightSRAM.size(); i++) {
+            cout << "Layer " << i << " - " << weightSRAM.at(i).size() << " rows, ";
+            cout << weightSRAM.at(i).at(0).size() << " columns" << endl;
+        }
+        cout << endl;
+    }
 };

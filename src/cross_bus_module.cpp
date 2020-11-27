@@ -68,7 +68,7 @@ class Cross_Bus : public sc_module {
 				internal_bus->Listen(req_addr, req_op, req_len);
 				
 				//This request is for the memory, check the operation and size:
-				if(req_addr >= DRAM_START_ADDR && req_addr < DRAM_START_ADDR + DRAM_SIZE){
+				if(req_addr >= DRAM_BASE_ADDR && req_addr < DRAM_BASE_ADDR + DRAM_SIZE){
 					internal_bus->Acknowledge(); //ack the request, then fulfil the operation
 					
 					for(unsigned int i = 0; i < req_len; i++){
