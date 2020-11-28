@@ -40,7 +40,7 @@ private:
 public:
     sc_in_clk clk;
 	
-	int tally_sram_access, tally_int_add, tally_int_multiply, tally_float_add, tally_float_multiply;
+	int tally_sram_access, tally_float_add, tally_float_multiply;
 	
     SC_HAS_PROCESS(EIE_accelerator);
 
@@ -49,8 +49,6 @@ public:
         output_ready = false;
 		
 		tally_sram_access = 0;
-		tally_int_add = 0;
-		tally_int_multiply = 0;
 		tally_float_add = 0;
 		tally_float_multiply = 0;
 		
@@ -80,16 +78,12 @@ public:
                             // skip zeros
                         }
                     }
-					tally_sram_access += layerWeights.size() * layerWeights.at(i).size();
+					tally_sram_access += 2*layerWeights.size() * layerWeights.at(i).size();
+					tally_float_add += layerWeights.size() * layerWeights.at(i).size();
+					tally_float_multiply += layerWeights.size() * layerWeights.at(i).size();
                     output.push_back(std::max(0.0, matVecProd));
                 }
 				
-				//Keep track of accesses and computations
-				
-				tally_int_add += 0;
-				tally_int_multiply += 0;
-				tally_float_add += 0;
-				tally_float_multiply += 0;
                 output_ready = true;
             }
             

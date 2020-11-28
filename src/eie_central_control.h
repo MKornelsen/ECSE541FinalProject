@@ -17,10 +17,10 @@ POWER MODELLING:
 	Power modelling is carried out with Yousef's power 
 	estimates which are based both on the EIE paper and some
 	approximations we made. Each bus transfer on the 
-	accelerator-facing bus costs 5.5 pJ as per the model.
+	accelerator-facing bus costs 5.5 pJ as per the model. We
+	also take into account the power due to register writes
+	when taking the output from the accelerators. 
 	
-	TODO: YOUSEF. Do we have to take into account any power 
-	due to calculations in this module?
 
 
 *************************************************************/
@@ -44,7 +44,7 @@ public:
     sc_port<bus_minion_if> bus_minion;
     sc_port<bus_master_if> bus_master;
 	
-	int tally_transfers_acc_bus;
+	int tally_transfers_acc_bus, tally_output_read;
 	
     SC_HAS_PROCESS(EIE_central_control);
 
@@ -53,6 +53,9 @@ public:
         for (int i = 0; i < EIE_CC_ADDR_SIZE; i++) {
             status[i] = 0;
         }
+		
+		tally_output_read = 0;
+		tally_transfers_acc_bus = 0;
         
         SC_THREAD(eie_cc_minion);
         SC_THREAD(eie_cc_master);
@@ -190,9 +193,10 @@ public:
                     inputBuffer.push_back(arrayForm.at(i % NUM_ACCELERATORS).at(i / NUM_ACCELERATORS));
                 }
             }
-			//TODO: keep track of the FetchResult() above! Consider this a register access. 
+			
 			//Keep track of the accelerator accesses
-			tally_transfers_acc_bus += numLayers * (2 * NUM_ACCELERATORS);
+			tally_transfers_acc_bus += numLayers * (2 * NUM_ACCELERATORS); //tally of the presumed local accesses
+			tally_output_read += numLayers * NUM_ACCELERATORS; //tally of the storage of outputs from the accelerators
 			
             outputBuffer.clear();
             // cout << "OUTPUT:" << endl;

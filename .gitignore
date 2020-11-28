@@ -4,5 +4,5 @@ Weights
 
 #SYSTEM C LIBRARY SHOULD NOT BE INCLUDED IN A PUSH
 ./SystemC/*
-
+Proj_exec
 

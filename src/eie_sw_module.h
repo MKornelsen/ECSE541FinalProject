@@ -17,9 +17,12 @@ POWER MODELLING:
 	estimates which are based both on the EIE paper and some
 	approximations we made. For the CPU, power is mostly 
 	expended in the calculation phases. Tallies for bus power
-	are kept in the bus and not the CPU. 
-	
-	TODO: Add tallies for all operations. 
+	are kept in the bus and not the CPU. The power values for
+	all operations are:
+		- 32-bit int add = 0.1 pJ
+		- 32-bit float add = 0.9 pJ
+		- 32-bit int multiply = 3.1 pJ
+		- 32-bit float multiply = 3.7 pJ
 
 *************************************************************/
 
@@ -29,19 +32,28 @@ private:
 
 public:
     sc_port<bus_master_if> bus;
+	int tally_dram_access, tally_int_add, tally_int_multiply;
+	
 	
     SC_HAS_PROCESS(EIE_SW_module);
 
     EIE_SW_module(sc_module_name name) : sc_module(name) {
-
+		
+		tally_dram_access = 0;
+		tally_int_add = 0;
+		tally_int_multiply = 0;
+		
         SC_THREAD(sw_proc);
     }
 
     void sw_proc() {
         cout << "EIE_SW running" << endl;
         unsigned int req_addr, req_op, req_len;
-        //TODO:add 640 pJ penalty for reading cpu instructions from DRAM. 
-        // load weights to accelerators
+		
+		//Add 640 pJ penalty for presumed reading of cpu instructions from DRAM. 
+        tally_dram_access += 1;
+		
+		// load weights to accelerators
         unsigned int ccstatus[10];
 
         unsigned int dram_addr = 0;
@@ -134,12 +146,16 @@ public:
             cout << "Correct Label: " << correctLabel << endl;
             cout << "Predicted Label: " << predLabel << endl << endl;;
             
-	    //TODO: Tallies are added here: for comparison, addition, multiplication below.
             if (correctLabel == predLabel) {
                 goodPredictions++;
+				tally_int_add += 1;
             }
 
             dram_addr += 28 * 28 + 1;
+			
+			//tracking operations
+			tally_int_add += 2;
+			tally_int_multiply += 1;
         }
         
         cout << "Predicted " << goodPredictions << "/" << TEST_IMAGES << " (" << (double) goodPredictions / TEST_IMAGES << ")" << endl;
