@@ -5,6 +5,26 @@
 #include "project_include.h"
 #include "eie_if.h"
 
+/*************************************************************
+EIE_Central_Control.h is the accelerator control unit. This
+module connects to all the accelerators over local busses and
+transfer weights and inputs/outputs. This module has two bus
+connections: the on-chip bus connecting to the CPU, and the
+bus to the accelerators. The former is already modelled in 
+bus.h, and the latter must be modelled here. 
+
+POWER MODELLING:
+	Power modelling is carried out with Yousef's power 
+	estimates which are based both on the EIE paper and some
+	approximations we made. Each bus transfer on the 
+	accelerator-facing bus costs 5.5 pJ as per the model.
+	
+	TODO: YOUSEF. Do we have to take into account any power 
+	due to calculations in this module?
+
+
+*************************************************************/
+
 class EIE_central_control : public sc_module {
 private:
 
@@ -23,7 +43,9 @@ public:
     sc_port<EIE_accel_if> accelerators[NUM_ACCELERATORS];
     sc_port<bus_minion_if> bus_minion;
     sc_port<bus_master_if> bus_master;
-
+	
+	int tally_transfers_acc_bus;
+	
     SC_HAS_PROCESS(EIE_central_control);
 
     EIE_central_control(sc_module_name name) : sc_module(name) {
@@ -168,6 +190,10 @@ public:
                     inputBuffer.push_back(arrayForm.at(i % NUM_ACCELERATORS).at(i / NUM_ACCELERATORS));
                 }
             }
+			
+			//Keep track of the accelerator accesses
+			tally_transfers_acc_bus += numLayers * (2 * NUM_ACCELERATORS);
+			
             outputBuffer.clear();
             // cout << "OUTPUT:" << endl;
             for (unsigned int i = 0; i < inputBuffer.size(); i++) {

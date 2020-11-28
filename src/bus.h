@@ -1,8 +1,30 @@
 #pragma once
 
+/*************************************************************
+Bus.h describes the on-chip bus module for the EIE software-
+hardware system. The on-chip bus connects the CPU master to
+the accelerator control unit minion and the memory control
+unit minion. The latter of these is the cross-bus module 
+which completes transactions across the external bus with 
+the DRAM module. 
+
+POWER MODELLING:
+	Power modelling is carried out with Yousef's power 
+	estimates which are based both on the EIE paper and some
+	simple calculations for the relative loads of each module
+	and their expected power usage as per the expected 
+	capacitance. 
+	
+	Each access to the on-chip bus is expected to take a 
+	relatively small power usage of just 1 pJ since we're 
+	modelling this bus as a simple register read.
+	
+	Each transfer will be modelled as a 32-bit transfer of 1pJ
+	and a running tally is kept of the number of transfers. 
+*************************************************************/
+
 #include <systemc.h>
 #include <queue>
-
 #include <project_include.h>
 
 struct bus_request {
@@ -42,11 +64,13 @@ private:
 
 public:
     sc_in_clk clk;
+	int tally_bus_transfers;
 
     SC_HAS_PROCESS(bus_clocked);
 
     bus_clocked(sc_module_name name, int debug = 0) : sc_module(name) {
-        cur_request = NULL;
+        tally_bus_transfers = 0;
+		cur_request = NULL;
         state = IDLE;
         acknowledged = false;
         bus_ready = false;
@@ -93,6 +117,9 @@ public:
         wait(clk.posedge_event());
         bus_request *req = new bus_request(mst_id, addr, op, len);
         request_queue.at(mst_id).push_back(req);
+		
+		//Update tally:
+		tally_bus_transfers += len;
     }
 
     bool WaitForAcknowledge(unsigned int mst_id) {

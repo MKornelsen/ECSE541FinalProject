@@ -1,8 +1,19 @@
+/*************************************************************
+EIE_Main.cpp is the main file for the EIE TLM model. This 
+model takes into account power modelling and system-level 
+modelling to produce a system suitable for design space 
+exploration. The system consists of a CPU (eie_sw_module),
+an accelerator control unit (eie_central_control), the 
+accelerators themselves (eie_accelerator), an internal-to-
+external bus module (cross_bus_module), and finally a DRAM 
+module. Power modelling is done with some approximations 
+based on the reported energy usage in the EIE paper. 
+*************************************************************/
+
 #include <systemc.h>
 #include <project_include.h>
 #include "bus.h"
 #include "cross_bus_module.cpp"
-#include "memory.cpp"
 #include "DRAM.cpp"
 #include "eie_accelerator.h"
 #include "eie_sw_module.h"
@@ -10,13 +21,7 @@
 #define help_usage 1
 #define help_file 2
 
-/**
-===========================================================================================
-TODO:Change all comments and file names to match project
-===========================================================================================
-**/
-
-#define clock_period_int 10
+#define clock_period_int 0.5
 #define clock_period_ex  20
 
 //Top module

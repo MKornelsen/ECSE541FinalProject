@@ -3,20 +3,41 @@
 #include <stdio.h>
 #include <stdlib.h> 
 
-/**
-This is the interface between the internal and external bus. 
+/*************************************************************
+Cross_Bus_Module.h is the interface between the internal and 
+external bus. The only device connected to the external bus is
+the DRAM. This module is expected to act as a minion on the 
+internal bus, but as THE master on the external bus. 
 
-The only device connected to the external bus is the DRAM. This module
-is expected to act as a minion on the internal bus, but as THE master on 
-the external bus. 
+The implementation is all memory-mapped, so you don't have to 
+worry about changing between internal and external addresses
+for I/O.
 
-Initially, this module will only rd/wr single words from main memory (DRAM).
-Later I will add implementation for a cache and necessarily also for reading
-entire rows from DRAM. This will serve to populate the cache.
+Future considerations: 
+	Adding cache to this module would serve to model a real 
+	processor. Almost every processor these days comes with
+	cache of some kind and if we're modelling an SoC without
+	cache at some level it's kind of a disingenuous model. 
 
-The implementation is all memory-mapped, so I don't have to worry about 
-changing between internal and external addresses for I/O.
-**/
+POWER MODELLING:
+	Power modelling is carried out with Yousef's power 
+	estimates which are based both on the EIE paper. Each DRAM
+	access is modelled as taking 640 pJ due to the large load
+	of both the external bus itself, but also the DRAM since
+	it is a huge capacitive load. We assume that this number 
+	also takes into account the inductive loads from pads etc.
+	
+	Each transfer will be modelled as a 32-bit transfer of 
+	640 pJ and a running tally is kept of the number of 
+	transfers. 
+	
+	It may seem strange that the power model for the DRAM is
+	encapsulated in the bus connecting to it, but this is 
+	because we do not have any numbers for the actual bus
+	power versus the DRAM, we just have power numbers for a
+	DRAM access in totality. 
+*************************************************************/
+
 
 class Cross_Bus : public sc_module {
 	
@@ -44,12 +65,15 @@ class Cross_Bus : public sc_module {
 		sc_in<bool> internal_clk;
 		sc_in<bool> external_clk;
 		
+		int transfer_tally;
+		
 		SC_HAS_PROCESS(Cross_Bus);
 		
 		//Constructor
 		Cross_Bus(sc_module_name name) : sc_module(name) {
 			cout << "CROSS BUS has been instantiated with name *" << name << endl;
 			
+			transfer_tally = 0;
 			in_use = false;
 			
 			SC_THREAD(internal_bus_thread);
@@ -106,7 +130,7 @@ class Cross_Bus : public sc_module {
 			wait();
 			while(true){
 				wait(dram_access_event);
-				//cout << "TIME " << sc_time_stamp() << ", ACCESSING DRAM!\n";
+				transfer_tally += 1; //keep track of transfers.
 				if(req_op == OP_READ){
 					//read
 					dram_if->Read(dram_req_addr, rdata);

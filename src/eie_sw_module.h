@@ -2,13 +2,37 @@
 
 #include <systemc.h>
 
+/*************************************************************
+EIE_SW_Module.h is the CPU module of the EIE system. This 
+module starts the initialization process with the control unit
+by notifying it to start loading weights. After this is done, 
+the module will load input images to the control unit for 
+testing. The results of the test are loaded from the 
+accelerator control unit and the correct label is loaded from
+DRAM where it is stored with the input images. Labels are 
+then compared and a tally is kept of the accuracy.
+
+POWER MODELLING:
+	Power modelling is carried out with Yousef's power 
+	estimates which are based both on the EIE paper and some
+	approximations we made. For the CPU, power is mostly 
+	expended in the calculation phases. Tallies for bus power
+	are kept in the bus and not the CPU. 
+	
+	TODO: YOUSEF, figure out how we should model the CPU power
+	usage.. there aren't many calculations.. maybe we should 
+	take the register accesses into account?
+
+
+*************************************************************/
+
 class EIE_SW_module : public sc_module {
 private:
     unsigned int layerDefs[NUM_LAYERS + 1] = LAYER_SIZES;
 
 public:
     sc_port<bus_master_if> bus;
-
+	
     SC_HAS_PROCESS(EIE_SW_module);
 
     EIE_SW_module(sc_module_name name) : sc_module(name) {

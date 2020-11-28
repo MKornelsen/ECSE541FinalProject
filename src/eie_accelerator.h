@@ -5,6 +5,30 @@
 #include "eie_if.h"
 #include "eie_central_control.h"
 
+/*************************************************************
+EIE_Accelerator.h is the modelled EIE accelerator unit. Since
+it is just a model, this module does not actually implement
+the sparse matrix multipy as specified by the EIE paper. 
+Instead each weight is anyway transferred to the accelerators
+whole, and the accelerator takes care of the computation as
+a neural network normally would. Weights are stored in a 
+local SRAM which is local to each accelerator. No weight
+sharing occurs between accelerators. This is a model solely
+for the fully-connected layers of a network.
+
+POWER MODELLING:
+	Power modelling is carried out with Yousef's power 
+	estimates which are based both on the EIE paper and some
+	approximations we made. Each local SRAM access costs 5 pJ
+	and the computations are as follows:
+		- 32-bit int add = 0.1 pJ
+		- 32-bit float add = 0.9 pJ
+		- 32-bit int multiply = 3.1 pJ
+		- 32-bit float multiply = 3.7 pJ
+
+*************************************************************/
+
+
 class EIE_accelerator : public sc_module, public EIE_accel_if {
 private:
     std::vector<std::vector<std::vector<double>>> weightSRAM;
@@ -15,12 +39,21 @@ private:
     unsigned int current_layer;
 public:
     sc_in_clk clk;
-
+	
+	int tally_sram_access, tally_int_add, tally_int_multiply, tally_float_add, tally_float_multiply;
+	
     SC_HAS_PROCESS(EIE_accelerator);
 
     EIE_accelerator(sc_module_name name) : sc_module(name) {
         input_ready = false;
         output_ready = false;
+		
+		tally_sram_access = 0;
+		tally_int_add = 0;
+		tally_int_multiply = 0;
+		tally_float_add = 0;
+		tally_float_multiply = 0;
+		
 
         SC_THREAD(eie_accelerator_proc);
     }
@@ -47,8 +80,16 @@ public:
                             // skip zeros
                         }
                     }
+					tally_sram_access += layerWeights.size() * layerWeights.at(i).size();
                     output.push_back(std::max(0.0, matVecProd));
                 }
+				
+				//Keep track of accesses and computations
+				
+				tally_int_add += 0;
+				tally_int_multiply += 0;
+				tally_float_add += 0;
+				tally_float_multiply += 0;
                 output_ready = true;
             }
             
