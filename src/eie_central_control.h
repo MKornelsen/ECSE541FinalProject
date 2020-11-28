@@ -190,7 +190,7 @@ public:
                     inputBuffer.push_back(arrayForm.at(i % NUM_ACCELERATORS).at(i / NUM_ACCELERATORS));
                 }
             }
-			
+			//TODO: keep track of the FetchResult() above! Consider this a register access. 
 			//Keep track of the accelerator accesses
 			tally_transfers_acc_bus += numLayers * (2 * NUM_ACCELERATORS);
 			
