@@ -19,10 +19,7 @@ POWER MODELLING:
 	expended in the calculation phases. Tallies for bus power
 	are kept in the bus and not the CPU. 
 	
-	TODO: YOUSEF, figure out how we should model the CPU power
-	usage.. there aren't many calculations.. maybe we should 
-	take the register accesses into account?
-
+	TODO: Add tallies for all operations. 
 
 *************************************************************/
 
@@ -43,7 +40,7 @@ public:
     void sw_proc() {
         cout << "EIE_SW running" << endl;
         unsigned int req_addr, req_op, req_len;
-
+        //TODO:add 640 pJ penalty for reading cpu instructions from DRAM. 
         // load weights to accelerators
         unsigned int ccstatus[10];
 
@@ -136,7 +133,8 @@ public:
             cout << "Image " << i << endl;
             cout << "Correct Label: " << correctLabel << endl;
             cout << "Predicted Label: " << predLabel << endl << endl;;
-
+            
+	    //TODO: Tallies are added here: for comparison, addition, multiplication below.
             if (correctLabel == predLabel) {
                 goodPredictions++;
             }
