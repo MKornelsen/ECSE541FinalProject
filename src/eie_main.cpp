@@ -45,11 +45,17 @@ class project_top : public sc_module {
 		EIE_central_control * eie_cc;
 		EIE_accelerator * eie_accels[NUM_ACCELERATORS];
 		
+		//TODO: add dynamic and static power numbers. 
+		double power_dynamic, power_static;
+		
 		SC_HAS_PROCESS(project_top);
 		
 		//Top module constructor
 		project_top(sc_module_name name, bool verbose) : sc_module(name) {
 			init_print();
+			
+			power_dynamic = 0; //sum and multiple of tallies with energy numbers.
+			power_static = 0; //0.1 times the dynamic power
 			
 			//Instantiate the objects and link them to the various ports and signals
 			bus = new bus_clocked("MY_BUS");
