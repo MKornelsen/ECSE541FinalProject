@@ -159,7 +159,8 @@ public:
         }
         
         cout << "Predicted " << goodPredictions << "/" << TEST_IMAGES << " (" << (double) goodPredictions / TEST_IMAGES << ")" << endl;
-
+        //TODO: find time of execution for simulation, return to main. 
+	//DON'T STOP EXECUTION .. This is static power. 
         sc_stop();
     }
 };
