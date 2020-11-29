@@ -33,7 +33,7 @@ private:
 public:
     sc_port<bus_master_if> bus;
 	int tally_dram_access, tally_int_add, tally_int_multiply;
-	
+	sc_event done_execution;
 	
     SC_HAS_PROCESS(EIE_SW_module);
 
@@ -159,7 +159,9 @@ public:
         }
         
         cout << "Predicted " << goodPredictions << "/" << TEST_IMAGES << " (" << (double) goodPredictions / TEST_IMAGES << ")" << endl;
-
-        sc_stop();
+		
+		//Notify the main module to stop execution and tally results
+        done_execution.notify();
+		
     }
 };
