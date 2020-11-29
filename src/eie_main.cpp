@@ -24,6 +24,17 @@ based on the reported energy usage in the EIE paper.
 #define clock_period_int 0.5
 #define clock_period_ex  20
 
+//Define the power numbers - all numbers in pJ
+#define POWER_FL_ADD      0.9
+#define POWER_FL_MUL      3.7
+#define POWER_INT_ADD     0.1
+#define POWER_INT_MUL     3.1
+#define POWER_SRAM        5.0
+#define POWER_ACC_BUS     5.5
+#define POWER_BUS         1.0
+#define POWER_REGISTER    1.0
+#define POWER_DRAM        640.0
+
 //Top module
 class project_top : public sc_module {
 	
@@ -45,7 +56,7 @@ class project_top : public sc_module {
 		EIE_central_control * eie_cc;
 		EIE_accelerator * eie_accels[NUM_ACCELERATORS];
 		
-		//TODO: add dynamic and static power numbers. 
+		//Static and dynamic power estimates tallied from the modules
 		double power_dynamic, power_static;
 		
 		SC_HAS_PROCESS(project_top);
@@ -56,6 +67,10 @@ class project_top : public sc_module {
 			
 			power_dynamic = 0; //sum and multiple of tallies with energy numbers.
 			power_static = 0; //0.1 times the dynamic power
+			
+			//Define the tracker thread -> NEEDS TO BE DONE BEFORE THE REST OF THE MODULES
+			SC_THREAD(event_tracker);
+			 	sensitive << int_clk.pos();
 			
 			//Instantiate the objects and link them to the various ports and signals
 			bus = new bus_clocked("MY_BUS");
@@ -89,25 +104,67 @@ class project_top : public sc_module {
 				eie_cc -> accelerators[i](*eie_accels[i]);
 			}
 			
-			//Define the testbench thread
-			// SC_THREAD(testbench);
-			// 	dont_initialize();
-			// 	sensitive << int_clk.pos();
+		}
+		
+		void event_tracker(){
+			//See when EIE_SW is done loading weights
+			cout << "HELLO???\n";
+			wait(eie_sw->done_execution);
+			
+			//DRAM accesses from CPU (expected due to instruction loading) and the cross_bus tally
+			int total_dram_tally = eie_sw->tally_dram_access + cross_bus->transfer_tally;
+			
+			//SRAM accesses and float operations from EIE_ACC only
+			int sram_tally = 0;
+			int float_add_tally = 0;
+			int float_mult_tally = 0;
+			
+			for (int i = 0; i < NUM_ACCELERATORS; i++) {
+				sram_tally += eie_accels[i] -> tally_sram_access;
+				float_add_tally += eie_accels[i] -> tally_float_add;
+				float_mult_tally += eie_accels[i] -> tally_float_multiply;
+			}
+			
+			int tally_cc_bus = eie_cc->tally_transfers_acc_bus;
+			
+			int tally_bus = bus->tally_bus_transfers;
+			
+			int tally_cc_register = eie_cc->tally_output_read;
+			
+			int int_add_tally = eie_sw->tally_int_add;
+			int int_mult_tally = eie_sw->tally_int_multiply;
+			
+			double power_float_ops = POWER_FL_ADD*float_add_tally + POWER_FL_MUL*float_mult_tally;
+			double power_int_ops   = POWER_INT_ADD*int_add_tally + POWER_INT_MUL*int_mult_tally;
+			double power_sram      = POWER_SRAM*sram_tally;
+			double power_acc_bus   = POWER_ACC_BUS*tally_cc_bus;
+			double power_bus       = POWER_BUS*tally_bus;
+			double power_dram      = POWER_DRAM*total_dram_tally;
+			double power_register  = POWER_REGISTER*tally_cc_register;
+			
+			double total_power = power_float_ops + power_int_ops + power_sram + power_acc_bus + power_bus + power_dram;
+			
+			cout << "\n----------------------------------\n";
+			cout << "\nDONE Project Simulation\n";
+			cout << "\nAT TIME: " << sc_time_stamp() << endl << endl;
+			cout << "Power from integer operations = " << power_int_ops << " pJ\n";
+			cout << "Power from float operations = "   << power_float_ops << " pJ\n";
+			cout << "Power from SRAM accesses = "      << power_sram << " pJ\n";
+			cout << "Power from accelerator bus = "    << power_acc_bus << " pJ\n";
+			cout << "Power from internal bus = "       << power_bus << " pJ\n";
+			cout << "Power from DRAM accesses = "      << power_dram << " pJ\n";
+			cout << "Power from register accesses = "  << power_register << " pJ\n";
+			cout << "\n----------------------------------\n";
+			cout << "\nTotal power = " << total_power << " pJ\n";
+			cout << "\n----------------------------------\n";
+			
+			sc_stop();
 		}
 		
 		void init_print(){
 			cout << "\n---------------------------\n";
 			cout << "\nStarting Project Simulation\n";
 			cout << "\n---------------------------\n";
-		}
-	
-		void final_print(int sw_c, int hw_c){
-			cout << "\n----------------------------------\n";
-			cout << "\nDONE Project Simulation\n";
-			cout << "\nAT TIME: " << sc_time_stamp() << endl;
-			cout << "\nSOFTWARE MODULE USED: " << sw_c << " cycles\n";
-			cout << "\nHARDWARE MODULE USED: " << hw_c << " cycles\n";
-			cout << "\n----------------------------------\n";
 		}
 }; //End module project_top
 
