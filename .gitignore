@@ -1,8 +1,7 @@
 .vscode
 build
 Weights
-
+CMakeLists.txt
 #SYSTEM C LIBRARY SHOULD NOT BE INCLUDED IN A PUSH
-./SystemC/*
 Proj_exec
 

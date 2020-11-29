@@ -1,6 +1,5 @@
 #include <SystemC.h>
 #include <project_include.h>
-#include "bus.cpp"
 #include "eie_accelerator.h"
 
 class accelerator_tb : public sc_module {
