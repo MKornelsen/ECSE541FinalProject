@@ -62,6 +62,7 @@ class project_top : public sc_module {
             eie_sw -> bus(*bus);
 			
 			dram = new DRAM("MY_DRAM");
+			dram -> clk(ext_clk);
 			
 			cross_bus = new Cross_Bus("MY_INTERNAL_EXTERNAL_MOD");
 			cross_bus -> internal_bus(*bus);

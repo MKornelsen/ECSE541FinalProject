@@ -33,7 +33,7 @@ Include file for Assignment 1
 
 
 /** </INTERNAL DEFINES> **/
-#define TEST_IMAGES 1000
+#define TEST_IMAGES 2000
 
 /** <EXTERNAL DEFINES> **/
 #define DRAM_BASE_ADDR 1024

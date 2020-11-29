@@ -62,8 +62,8 @@ class Cross_Bus : public sc_module {
 		sc_port<bus_minion_if> internal_bus;
 		sc_port<simple_mem_if> dram_if;
 		
-		sc_in<bool> internal_clk;
-		sc_in<bool> external_clk;
+		sc_in_clk internal_clk;
+		sc_in_clk external_clk;
 		
 		int transfer_tally;
 		

@@ -20,6 +20,8 @@ class DRAM : public sc_module, public simple_mem_if {
 		unsigned int main_memory[DRAM_SIZE];
 		char correctLabels[TEST_IMAGES];
 	public:
+
+		sc_in_clk clk;
 		
 		SC_HAS_PROCESS(DRAM);
 		
@@ -109,7 +111,7 @@ class DRAM : public sc_module, public simple_mem_if {
 		
 		//Write to memory with simple interface
 		bool Write(unsigned int addr, unsigned int data){
-			wait(); //write costs 1 clock cycle
+			wait(clk.posedge_event()); //write costs 1 clock cycle
 			//Write to the memory
 			if(addr >= DRAM_BASE_ADDR && addr < DRAM_BASE_ADDR + DRAM_SIZE){
 				//write to memory
@@ -123,7 +125,7 @@ class DRAM : public sc_module, public simple_mem_if {
 		
 		//Read from memory with simple interface
 		bool Read(unsigned int addr, unsigned int& data){
-			wait(); wait(); //read costs 2 clock cycles
+			wait(clk.posedge_event()); wait(clk.posedge_event()); //read costs 2 clock cycles
 			//Read from the memory
 			if(addr >= DRAM_BASE_ADDR && addr < DRAM_BASE_ADDR + DRAM_SIZE){
 				//read to memory
