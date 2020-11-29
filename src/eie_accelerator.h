@@ -78,9 +78,9 @@ public:
                             // skip zeros
                         }
                     }
-					tally_sram_access += 2*layerWeights.size() * layerWeights.at(i).size();
-					tally_float_add += layerWeights.size() * layerWeights.at(i).size();
-					tally_float_multiply += layerWeights.size() * layerWeights.at(i).size();
+					tally_sram_access += (int) (2 * layerWeights.size() * layerWeights.at(i).size());
+					tally_float_add += (int) (layerWeights.size() * layerWeights.at(i).size());
+					tally_float_multiply += (int) (layerWeights.size() * layerWeights.at(i).size());
                     output.push_back(std::max(0.0, matVecProd));
                 }
 				
