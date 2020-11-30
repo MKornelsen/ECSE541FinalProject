@@ -44,7 +44,7 @@ public:
     sc_port<bus_minion_if> bus_minion;
     sc_port<bus_master_if> bus_master;
 	
-	int tally_transfers_acc_bus, tally_output_read;
+	unsigned int tally_transfers_acc_bus, tally_output_read;
 	
     SC_HAS_PROCESS(EIE_central_control);
 

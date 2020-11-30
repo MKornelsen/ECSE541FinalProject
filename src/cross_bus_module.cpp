@@ -65,7 +65,7 @@ class Cross_Bus : public sc_module {
 		sc_in_clk internal_clk;
 		sc_in_clk external_clk;
 		
-		int transfer_tally;
+		unsigned int transfer_tally;
 		
 		SC_HAS_PROCESS(Cross_Bus);
 		

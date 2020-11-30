@@ -110,15 +110,21 @@ class project_top : public sc_module {
 		void event_tracker(){
 			//See when EIE_SW is done loading weights
 			cout << "HELLO???\n";
+			wait(eie_sw->done_weight_init);
+
+			sc_time weightTime = sc_time_stamp();
+			unsigned int weight_phase_dram = eie_sw->tally_dram_access + cross_bus->transfer_tally;
+			double weight_phase_power = weight_phase_dram * POWER_DRAM;
+
 			wait(eie_sw->done_execution);
 			
 			//DRAM accesses from CPU (expected due to instruction loading) and the cross_bus tally
-			int total_dram_tally = eie_sw->tally_dram_access + cross_bus->transfer_tally;
+			unsigned int total_dram_tally = eie_sw->tally_dram_access + cross_bus->transfer_tally;
 			
 			//SRAM accesses and float operations from EIE_ACC only
-			int sram_tally = 0;
-			int float_add_tally = 0;
-			int float_mult_tally = 0;
+			unsigned int sram_tally = 0;
+			unsigned int float_add_tally = 0;
+			unsigned int float_mult_tally = 0;
 			
 			for (int i = 0; i < NUM_ACCELERATORS; i++) {
 				sram_tally += eie_accels[i] -> tally_sram_access;
@@ -126,14 +132,14 @@ class project_top : public sc_module {
 				float_mult_tally += eie_accels[i] -> tally_float_multiply;
 			}
 			
-			int tally_cc_bus = eie_cc->tally_transfers_acc_bus;
+			unsigned int tally_cc_bus = eie_cc->tally_transfers_acc_bus;
 			
-			int tally_bus = bus->tally_bus_transfers;
+			unsigned int tally_bus = bus->tally_bus_transfers;
 			
-			int tally_cc_register = eie_cc->tally_output_read;
+			unsigned int tally_cc_register = eie_cc->tally_output_read;
 			
-			int int_add_tally = eie_sw->tally_int_add;
-			int int_mult_tally = eie_sw->tally_int_multiply;
+			unsigned int int_add_tally = eie_sw->tally_int_add;
+			unsigned int int_mult_tally = eie_sw->tally_int_multiply;
 			
 			double power_float_ops = POWER_FL_ADD*float_add_tally + POWER_FL_MUL*float_mult_tally;
 			double power_int_ops   = POWER_INT_ADD*int_add_tally + POWER_INT_MUL*int_mult_tally;
@@ -157,6 +163,18 @@ class project_top : public sc_module {
 			cout << "Power from register accesses = "  << power_register << " pJ\n";
 			cout << "\n----------------------------------\n";
 			cout << "\nTotal power = " << total_power << " pJ\n";
+			cout << "\n----------------------------------\n";
+			cout << "Weight Phase\n";
+			cout << "Time Spent: " << weightTime << endl;
+			cout << "Used " << POWER_DRAM * weight_phase_dram << " pJ";
+			cout << "\n----------------------------------\n";
+			cout << "Inference Phase (" << TEST_IMAGES << " images)\n";
+			cout << "Time Spent: " << sc_time_stamp() - weightTime << endl;
+			cout << "Power used for inference = " << total_power - weight_phase_power << " pJ" << endl;
+			cout << "\n----------------------------------\n";
+			cout << "Per Image" << endl;
+			cout << "Average Time Spent: " << (sc_time_stamp() - weightTime) / TEST_IMAGES << endl;
+			cout << "Average Power Consumed = " << (total_power - weight_phase_power) / TEST_IMAGES << " pJ" << endl;
 			cout << "\n----------------------------------\n";
 			
 			sc_stop();

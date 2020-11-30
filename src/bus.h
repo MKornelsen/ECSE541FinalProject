@@ -64,7 +64,8 @@ private:
 
 public:
     sc_in_clk clk;
-	int tally_bus_transfers;
+    
+	unsigned int tally_bus_transfers;
 
     SC_HAS_PROCESS(bus_clocked);
 

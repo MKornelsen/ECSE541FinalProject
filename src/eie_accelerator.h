@@ -40,7 +40,7 @@ private:
 public:
     sc_in_clk clk;
 	
-	int tally_sram_access, tally_float_add, tally_float_multiply;
+	unsigned int tally_sram_access, tally_float_add, tally_float_multiply;
 	
     SC_HAS_PROCESS(EIE_accelerator);
 

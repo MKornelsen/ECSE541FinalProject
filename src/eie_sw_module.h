@@ -32,7 +32,8 @@ private:
 
 public:
     sc_port<bus_master_if> bus;
-	int tally_dram_access, tally_int_add, tally_int_multiply;
+	unsigned int tally_dram_access, tally_int_add, tally_int_multiply;
+    sc_event done_weight_init;
 	sc_event done_execution;
 	
     SC_HAS_PROCESS(EIE_SW_module);
@@ -95,6 +96,7 @@ public:
         cout << "dram_addr = " << dram_addr << " after weight loading" << endl;
         // Start pushing the MNIST inputs
         // set cc status to EIE_CC_OP_WRITE_INPUT
+        done_weight_init.notify();
         
 		unsigned int goodPredictions = 0;
 
