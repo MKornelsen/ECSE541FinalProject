@@ -33,7 +33,7 @@ Include file for Assignment 1
 
 
 /** </INTERNAL DEFINES> **/
-#define TEST_IMAGES 2500
+#define TEST_IMAGES 1000
 
 /** <EXTERNAL DEFINES> **/
 #define DRAM_BASE_ADDR 1024
@@ -43,7 +43,9 @@ Include file for Assignment 1
 
 #define LAYER_SIZES {784, 2500, 2000, 1500, 1000, 500, 10};
 
+#ifndef NUM_ACCELERATORS
 #define NUM_ACCELERATORS 4
+#endif
 
 #define EIE_CC_BASE_ADDR 0
 #define EIE_CC_ADDR_SIZE 0x100

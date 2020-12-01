@@ -51,7 +51,6 @@ public:
 		tally_sram_access = 0;
 		tally_float_add = 0;
 		tally_float_multiply = 0;
-		
 
         SC_THREAD(eie_accelerator_proc);
     }
@@ -62,12 +61,22 @@ public:
 
             if (input_ready) {
                 input_ready = false;
-                std::vector<std::vector<double>> &layerWeights = weightSRAM.at(current_layer);
-                if (layerWeights.at(0).size() != input.size()) {
+                
+                output.clear();
+                if (current_layer >= weightSRAM.size()) {
+                    output_ready = true;
                     continue;
                 }
-                output.clear();
+                std::vector<std::vector<double>> &layerWeights = weightSRAM.at(current_layer);
+                if (layerWeights.at(0).size() != input.size()) {
+                    output_ready = true;
+                    continue;
+                }
+                
                 for (int i = 0; i < layerWeights.size(); i++) {
+                    for (int j = 0; j < layerWeights.at(i).size() / 10; j++) {
+                        wait(clk.posedge_event());
+                    }
                     double matVecProd = 0.0;
                     for (int j = 0; j < layerWeights.at(i).size(); j++) {
                         double mtmp = layerWeights.at(i).at(j);

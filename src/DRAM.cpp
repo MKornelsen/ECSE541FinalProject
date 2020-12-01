@@ -107,6 +107,9 @@ class DRAM : public sc_module, public simple_mem_if {
 				main_memory[base_addr] = (unsigned int) (unsigned char) labelbuf[0];
 				base_addr++;
 			}
+
+			imgs.close();
+			labels.close();
 		}
 		
 		//Write to memory with simple interface

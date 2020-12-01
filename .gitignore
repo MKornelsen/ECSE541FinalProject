@@ -4,4 +4,5 @@ Weights
 CMakeLists.txt
 #SYSTEM C LIBRARY SHOULD NOT BE INCLUDED IN A PUSH
 Proj_exec
-
+output*
+*.bat

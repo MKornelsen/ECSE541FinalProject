@@ -180,6 +180,7 @@ public:
                 for (int j = 0; j < NUM_ACCELERATORS; j++) {
                     accelerators[j]->PushInputs(inputBuffer, i);
                 }
+                tally_transfers_acc_bus += (unsigned int) inputBuffer.size();
                 std::vector<double> tmpOutput;
                 std::vector<std::vector<double>> arrayForm;
                 unsigned int outSize = 0;
@@ -188,6 +189,7 @@ public:
                     arrayForm.push_back(std::vector<double>(tmpOutput));
                     outSize += (unsigned int) tmpOutput.size();
                 }
+                tally_output_read += (unsigned int) outSize;
                 inputBuffer.clear();
                 for (unsigned int i = 0; i < outSize; i++) {
                     inputBuffer.push_back(arrayForm.at(i % NUM_ACCELERATORS).at(i / NUM_ACCELERATORS));
@@ -198,8 +200,8 @@ public:
 			//are pushed then outputs are pulled we need the size of input and the size of output for the transfer tally
 			// and for the output read tally we need just the number of outputs. 
 			//Keep track of the accelerator accesses
-			tally_transfers_acc_bus += numLayers * (2 * NUM_ACCELERATORS); //tally of the presumed local accesses
-			tally_output_read += numLayers * NUM_ACCELERATORS; //tally of the storage of outputs from the accelerators
+			// tally_transfers_acc_bus += numLayers * (2 * NUM_ACCELERATORS); //tally of the presumed local accesses
+			// tally_output_read += numLayers * NUM_ACCELERATORS; //tally of the storage of outputs from the accelerators
 			
             outputBuffer.clear();
             // cout << "OUTPUT:" << endl;
